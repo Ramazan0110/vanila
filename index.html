@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WeatherNow</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">WeatherNow</div>
+    </header>
+
+    <section class="search-section">
+      <div class="search-box">
+        <input
+          type="text"
+          id="cityInput"
+          class="search-input"
+          placeholder="Введите город..."
+          autocomplete="off"
+        />
+        <button class="search-btn" id="searchBtn">Найти</button>
+      </div>
+      <p class="error-msg" id="errorMsg"></p>
+    </section>
+
+    <section class="weather-card" id="weatherCard" style="display:none">
+      <div class="card-top">
+        <div class="city-name" id="cityName">—</div>
+        <div class="weather-icon" id="weatherIcon"></div>
+      </div>
+      <div class="temp-block">
+        <span class="temp" id="temp">—</span>
+        <span class="temp-unit">°C</span>
+      </div>
+      <div class="description" id="description">—</div>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Влажность</span>
+          <span class="detail-value" id="humidity">—</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Ветер</span>
+          <span class="detail-value" id="wind">—</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Ощущается</span>
+          <span class="detail-value" id="feelsLike">—</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Видимость</span>
+          <span class="detail-value" id="visibility">—</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="loader" id="loader" style="display:none">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
