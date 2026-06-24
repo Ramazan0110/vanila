@@ -7,60 +7,46 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div class="logo">WeatherNow</div>
+  <main class="container">
+
+    <header>
+      <h1 class="logo">WeatherNow</h1>
+      <button id="themeToggle"><span class="theme-icon">Dark</span></button>
     </header>
 
     <section class="search-section">
-      <div class="search-box">
-        <input
-          type="text"
-          id="cityInput"
-          class="search-input"
-          placeholder="Введите город..."
-          autocomplete="off"
-        />
-        <button class="search-btn" id="searchBtn">Найти</button>
-      </div>
-      <p class="error-msg" id="errorMsg"></p>
+      <input type="text" id="cityInput" placeholder="Введите город..." autocomplete="off"/>
+      <button id="searchBtn">Найти</button>
+      <button id="geoBtn">GPS</button>
+      <p id="errorMsg"></p>
     </section>
 
-    <section class="weather-card" id="weatherCard" style="display:none">
-      <div class="card-top">
-        <div class="city-name" id="cityName">—</div>
-        <div class="weather-icon" id="weatherIcon"></div>
-      </div>
-      <div class="temp-block">
-        <span class="temp" id="temp">—</span>
-        <span class="temp-unit">°C</span>
-      </div>
-      <div class="description" id="description">—</div>
-      <div class="details-grid">
-        <div class="detail-item">
-          <span class="detail-label">Влажность</span>
-          <span class="detail-value" id="humidity">—</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Ветер</span>
-          <span class="detail-value" id="wind">—</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Ощущается</span>
-          <span class="detail-value" id="feelsLike">—</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Видимость</span>
-          <span class="detail-value" id="visibility">—</span>
-        </div>
-      </div>
+    <section id="historySection" style="display:none">
+      <p class="history-label">Недавние:</p>
+      <nav id="historyChips"></nav>
     </section>
 
-    <div class="loader" id="loader" style="display:none">
-      <div class="spinner"></div>
-    </div>
-  </div>
+    <section id="weatherCard" style="display:none">
+      <h2 id="cityName">—</h2>
+      <span id="weatherIcon"></span>
+      <p class="temp"><span id="temp">—</span>°C</p>
+      <p id="description">—</p>
+      <ul class="details-grid">
+        <li><span class="detail-label">Влажность</span><span id="humidity">—</span></li>
+        <li><span class="detail-label">Ветер</span><span id="wind">—</span></li>
+        <li><span class="detail-label">Ощущается</span><span id="feelsLike">—</span></li>
+        <li><span class="detail-label">Видимость</span><span id="visibility">—</span></li>
+      </ul>
+    </section>
 
+    <section id="forecastSection" style="display:none">
+      <h3>Прогноз на 5 дней</h3>
+      <ul id="forecastGrid"></ul>
+    </section>
+
+    <p id="loader" style="display:none">Загрузка...</p>
+
+  </main>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,14 +1,17 @@
-const API_KEY = "YOUR_API_KEY_HERE";
+const API_KEY = "580282e9c420a1ee1d71a1eb6db9f596";
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
+const geoBtn = document.getElementById("geoBtn");
 const errorMsg = document.getElementById("errorMsg");
 const weatherCard = document.getElementById("weatherCard");
 const forecastSection = document.getElementById("forecastSection");
 const forecastGrid = document.getElementById("forecastGrid");
 const loader = document.getElementById("loader");
-
+const themeToggle = document.getElementById("themeToggle");
+const historySection = document.getElementById("historySection");
+const historyChips = document.getElementById("historyChips");
 const cityName = document.getElementById("cityName");
 const weatherIcon = document.getElementById("weatherIcon");
 const temp = document.getElementById("temp");
@@ -18,7 +21,25 @@ const wind = document.getElementById("wind");
 const feelsLike = document.getElementById("feelsLike");
 const visibility = document.getElementById("visibility");
 
-// ===== SEARCH =====
+let searchHistory = JSON.parse(localStorage.getItem("weatherHistory")) || [];
+
+const savedTheme = localStorage.getItem("weatherTheme") || "dark";
+document.documentElement.setAttribute("data-theme", savedTheme);
+updateThemeIcon(savedTheme);
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("weatherTheme", next);
+  updateThemeIcon(next);
+});
+
+function updateThemeIcon(theme) {
+  themeToggle.querySelector(".theme-icon").textContent =
+    theme === "dark" ? "Light" : "Dark";
+}
+
 searchBtn.addEventListener("click", () => {
   const city = cityInput.value.trim();
   if (city) fetchWeather(city);
@@ -29,6 +50,24 @@ cityInput.addEventListener("keydown", (e) => {
     const city = cityInput.value.trim();
     if (city) fetchWeather(city);
   }
+});
+
+geoBtn.addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    showError("Геолокация не поддерживается вашим браузером.");
+    return;
+  }
+  showLoader(true);
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      fetchWeatherByCoords(latitude, longitude);
+    },
+    () => {
+      showLoader(false);
+      showError("Не удалось определить местоположение. Проверьте разрешения.");
+    },
+  );
 });
 
 async function fetchWeather(city) {
@@ -43,23 +82,46 @@ async function fetchWeather(city) {
         `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=ru`,
       ),
     ]);
-
     if (!currentRes.ok) {
       if (currentRes.status === 404)
         throw new Error("Город не найден. Проверьте название.");
       if (currentRes.status === 401) throw new Error("Неверный API ключ.");
       throw new Error("Ошибка сервера. Попробуйте позже.");
     }
-
     const current = await currentRes.json();
     const forecast = await forecastRes.json();
-
     renderWeather(current);
     renderForecast(forecast);
+    addToHistory(current.name);
   } catch (err) {
     showError(err.message);
     weatherCard.style.display = "none";
     forecastSection.style.display = "none";
+  } finally {
+    showLoader(false);
+  }
+}
+
+async function fetchWeatherByCoords(lat, lon) {
+  showError("");
+  try {
+    const [currentRes, forecastRes] = await Promise.all([
+      fetch(
+        `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ru`,
+      ),
+      fetch(
+        `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ru`,
+      ),
+    ]);
+    if (!currentRes.ok) throw new Error("Ошибка получения данных.");
+    const current = await currentRes.json();
+    const forecast = await forecastRes.json();
+    renderWeather(current);
+    renderForecast(forecast);
+    addToHistory(current.name);
+    cityInput.value = current.name;
+  } catch (err) {
+    showError(err.message);
   } finally {
     showLoader(false);
   }
@@ -94,10 +156,8 @@ function renderForecast(data) {
       dailyMap[dayKey] = item;
     }
   });
-
   const days = Object.entries(dailyMap).slice(0, 5);
   forecastGrid.innerHTML = "";
-
   days.forEach(([dayLabel, item]) => {
     const el = document.createElement("div");
     el.className = "forecast-item";
@@ -109,8 +169,35 @@ function renderForecast(data) {
     `;
     forecastGrid.appendChild(el);
   });
-
   forecastSection.style.display = "block";
+}
+
+function addToHistory(city) {
+  searchHistory = [
+    city,
+    ...searchHistory.filter((c) => c.toLowerCase() !== city.toLowerCase()),
+  ].slice(0, 5);
+  localStorage.setItem("weatherHistory", JSON.stringify(searchHistory));
+  renderHistory();
+}
+
+function renderHistory() {
+  if (searchHistory.length === 0) {
+    historySection.style.display = "none";
+    return;
+  }
+  historySection.style.display = "block";
+  historyChips.innerHTML = "";
+  searchHistory.forEach((city) => {
+    const chip = document.createElement("button");
+    chip.className = "chip";
+    chip.textContent = city;
+    chip.addEventListener("click", () => {
+      cityInput.value = city;
+      fetchWeather(city);
+    });
+    historyChips.appendChild(chip);
+  });
 }
 
 function showError(msg) {
@@ -137,3 +224,5 @@ function getWeatherLabel(code) {
   if (code >= 803) return "Overcast";
   return "—";
 }
+
+renderHistory();
