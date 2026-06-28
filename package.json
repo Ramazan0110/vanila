@@ -1,0 +1,21 @@
+{
+  "name": "vanila",
+  "version": "1.0.0",
+  "description": "Простое и красивое веб-приложение для просмотра погоды в любом городе мира.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ramazan0110/vanila.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ramazan0110/vanila/issues"
+  },
+  "homepage": "https://github.com/Ramazan0110/vanila#readme"
+}
